@@ -9,6 +9,8 @@ public class Playermovement : MonoBehaviour
     public Rigidbody2D rb;
 
     public Camera cam;
+	
+	public GameObject speedTimerUI;
 
     Vector2 movement;
 
@@ -32,4 +34,16 @@ public class Playermovement : MonoBehaviour
 
         rb.rotation = angle;
     }
+		private void OnTriggerEnter2D(Collider2D collision)
+	{
+		Debug.Log("OnTriggerEnter2D " + collision.gameObject.name + " " + this.name);
+		
+		if (collision.gameObject.CompareTag("PowerupSpeed"))		//Triggers if the player collides with object with tag "PowerupHealth", they regain health.
+		{
+			Destroy(collision.gameObject);	
+			moveSpeed = moveSpeed * 1.5f;
+			
+		}
+	}
+	
 }
