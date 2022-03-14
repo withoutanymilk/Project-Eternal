@@ -88,10 +88,9 @@ public class TotalBossAi : MonoBehaviour
             }
             else if (isAttacking && reachedEnd && !isWaiting)
             {
-               // Debug.Log("STARTING ATTACK");
-                anime.SetTrigger("Attack");
+                anime.SetTrigger("Attack"); //Starts AttackingState thru animator
                 isAttacking = false;
-                StartCoroutine(Waitfor(1.2f));
+                StartCoroutine(Waitfor(1.2f)); //waiting before attack to finish before returning to walk
                // isWalking = true;
                 //isWaiting = false;
 
