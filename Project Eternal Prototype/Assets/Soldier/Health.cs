@@ -34,7 +34,7 @@ public class Health : MonoBehaviour
     void Update()
     {
 		//if( Input.GetKeyDown( KeyCode.Space ) )		//Tests to see if the player takes damage
-		//{
+		//{ }
 		//	DamagePlayer(7);
 		//}
     }
@@ -53,11 +53,11 @@ public class Health : MonoBehaviour
 	{
 		curHealth -= damage;
 		
-		//healthBar.SetHealth( curHealth );
+		healthBar.SetHealth( curHealth );
 		
 		if (curHealth <= 0)							//This will destroy the player when their health reaches 0
 		{
-			//GameOver();
+			GameOver();
 		}
 	}
 	

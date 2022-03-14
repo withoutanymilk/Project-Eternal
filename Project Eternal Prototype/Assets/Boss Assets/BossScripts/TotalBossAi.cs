@@ -16,6 +16,7 @@ public class TotalBossAi : MonoBehaviour
     //For attacking
     public Transform attackPoint1;
     public Transform attackPoint2;
+    public Transform attackPoint3;
     public float attackRange = 1.5f;
     public LayerMask playerLayer;
     public int attackDamage = 10;
@@ -31,6 +32,7 @@ public class TotalBossAi : MonoBehaviour
 
 
 //STATES
+    bool isWaiting = false;
     //Stage 
     bool isStage1 = true;
     bool isStage2 = false;
@@ -79,11 +81,22 @@ public class TotalBossAi : MonoBehaviour
     {
         if (isStage1) // STAGE 1
         {
-            //check health
+            Debug.Log(isAttacking+ " " +reachedEnd+ " " + isWaiting);
             if (isWalking)
+            {
                 WalkingState();
-            else if (isAttacking && reachedEnd)
-                AttackingState();
+            }
+            else if (isAttacking && reachedEnd && !isWaiting)
+            {
+               // Debug.Log("STARTING ATTACK");
+                anime.SetTrigger("Attack");
+                isAttacking = false;
+                StartCoroutine(Waitfor(1.2f));
+               // isWalking = true;
+                //isWaiting = false;
+
+            }
+
         }
         else if (isStage2)  //STAGE 2
         {
@@ -148,32 +161,42 @@ public class TotalBossAi : MonoBehaviour
 
     void AttackingState()
     {
-        anime.SetTrigger("Attack");
-        anime.SetTrigger("AttackEnd");
-
+        anime.ResetTrigger("Attack");
+        bool hasHit = false;
         Collider2D[] hitZone1 = Physics2D.OverlapCircleAll(attackPoint1.position, attackRange, playerLayer);
         Collider2D[] hitZone2 = Physics2D.OverlapCircleAll(attackPoint2.position, attackRange, playerLayer);
-
+        Collider2D[] hitZone3 = Physics2D.OverlapCircleAll(attackPoint3.position, attackRange * 0.75f, playerLayer);
 
         foreach (Collider2D player in hitZone1)
         {
-            Debug.Log("PLAYER HIT in Zone 1");
+            Debug.Log("PLAYER HIT in Zone 1 NAME : " + player.name);
             player.GetComponent<Health>().DamagePlayer(attackDamage);
-            isAttacking = false;
-            StartCoroutine(Waitfor(2f));
-            return;
+            hasHit = true;
         }
-        foreach (Collider2D player in hitZone2)
+        
+
+        if (!hasHit)
         {
-            Debug.Log("PLAYER HIT in Zone 2");
-            player.GetComponent<Health>().DamagePlayer(attackDamage);
-            isAttacking = false;
-            StartCoroutine(Waitfor(2f));
-            return;
+            foreach (Collider2D player in hitZone2)
+            {
+                Debug.Log("PLAYER HIT in Zone 2 NAME : " + player.name);
+                player.GetComponent<Health>().DamagePlayer(attackDamage);
+                hasHit = true;
+            }
+        }
+        if (!hasHit)
+        {
+            foreach (Collider2D player in hitZone3)
+            {
+                Debug.Log("PLAYER HIT in Zone 3 NAME : " + player.name);
+                player.GetComponent<Health>().DamagePlayer(attackDamage/2);
+                hasHit = true;
+            }
         }
 
-        isAttacking = false;
-        StartCoroutine(Waitfor(2f));
+        Debug.Log("PASSED");
+        anime.SetTrigger("AttackEnd");
+        Debug.Log("Returning");
     }
 
 
@@ -208,17 +231,15 @@ public class TotalBossAi : MonoBehaviour
 
         Gizmos.DrawWireSphere(attackPoint1.position, attackRange);
         Gizmos.DrawWireSphere(attackPoint2.position, attackRange);
+        Gizmos.DrawWireSphere(attackPoint3.position, attackRange * 0.75f);
     }
 
 
-   private IEnumerator Waitfor(float delay)
+    private IEnumerator Waitfor(float delay)
     {
         yield return new WaitForSeconds(delay);
         isWalking = true;
     }
-
-
-
 
 
 
